@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détecteur de Trésor Raya</title>
+    <style>
+        body { 
+            background-color: #008080; /* Turquoise */
+            color: white; 
+            text-align: center; 
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding-top: 50px;
+        }
+        .circle { 
+            width: 220px; 
+            height: 220px; 
+            border-radius: 50%; 
+            background: radial-gradient(circle, #ff007f, #40e0d0); /* Rose vers Turquoise */
+            margin: 30px auto; 
+            border: 8px solid #ffffff;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 40px;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        button { 
+            padding: 15px 30px; 
+            font-size: 20px; 
+            border-radius: 50px; 
+            border: none; 
+            background: #ff007f; /* Rose */
+            color: white; 
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        #status { font-size: 22px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>Scanner de Trésor</h1>
+    
+    <div class="circle" id="force">0</div>
+    
+    <p id="status">Prêt pour la recherche...</p>
+    <br>
+    <button onclick="demarrerScan()">ACTIVER LE CAPTEUR</button>
+
+    <script>
+    let intervalle = null; // Une seule fois
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Fonction pour créer le son "Bip"
+    function biper(frequence) {
+        try {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = frequence;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
+            osc.stop(audioCtx.currentTime + 0.1);
+        } catch (e) {
+            console.log("Erreur audio : ", e);
+        }
+    }
+
+    // Fonction unique pour démarrer/arrêter le scan
+    function demarrerScan() {
+        if (intervalle) {
+            clearInterval(intervalle);
+            intervalle = null;
+            document.getElementById('status').innerHTML = "Scan arrêté.";
+            document.body.style.backgroundColor = "#008080";
+            return;
+        }
+
+        // Activation du contexte audio pour les téléphones
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        document.getElementById('status').innerHTML = "Recherche en cours...";
+        
+        intervalle = setInterval(() => {
+            let detection = Math.floor(Math.random() * 100); 
+            document.getElementById('force').innerHTML = detection;
+
+            if(detection > 85) {
+                document.getElementById('status').innerHTML = "⚠️ MÉTAL DÉTECTÉ !";
+                document.body.style.backgroundColor = "#FFD700"; // Couleur Or
+                document.getElementById('force').style.transform = "scale(1.2)";
+                biper(800); // Bip aigu
+            } else {
+                document.getElementById('status').innerHTML = "Recherche...";
+                document.body.style.backgroundColor = "#008080"; // Turquoise
+                document.getElementById('force').style.transform = "scale(1.0)";
+                if(detection > 60) {
+                    biper(400); // Petit bip grave si on s'approche
+                }
+            }
+        }, 500);
+    }
+</script>
+    
+</body>
+</html>
+
