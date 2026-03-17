@@ -43,7 +43,7 @@
 </head>
 <body>
 
-    <h1>Scanner de Trésor</h1>
+    <h1>Détecteur de Trésor</h1>
     
     <div class="circle" id="force">0</div>
     
@@ -52,10 +52,9 @@
     <button onclick="demarrerScan()">ACTIVER LE CAPTEUR</button>
 
     <script>
-    let intervalle = null; // Une seule fois
+    let intervalle = null;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    // Fonction pour créer le son "Bip"
     function biper(frequence) {
         try {
             const osc = audioCtx.createOscillator();
@@ -71,17 +70,15 @@
         }
     }
 
-    // Fonction unique pour démarrer/arrêter le scan
     function demarrerScan() {
         if (intervalle) {
             clearInterval(intervalle);
             intervalle = null;
-            document.getElementById('status').innerHTML = "Scan arrêté.";
+            document.getElementById('status').innerHTML = "Détection arrêtée.";
             document.body.style.backgroundColor = "#008080";
             return;
         }
 
-        // Activation du contexte audio pour les téléphones
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
@@ -96,19 +93,18 @@
                 document.getElementById('status').innerHTML = "⚠️ MÉTAL DÉTECTÉ !";
                 document.body.style.backgroundColor = "#FFD700"; // Couleur Or
                 document.getElementById('force').style.transform = "scale(1.2)";
-                biper(800); // Bip aigu
+                biper(800); 
             } else {
-                document.getElementById('status').innerHTML = "Recherche...";
-                document.body.style.backgroundColor = "#008080"; // Turquoise
+                document.getElementById('status').innerHTML = "Recherche en cours...";
+                document.body.style.backgroundColor = "#008080"; 
                 document.getElementById('force').style.transform = "scale(1.0)";
                 if(detection > 60) {
-                    biper(400); // Petit bip grave si on s'approche
+                    biper(400); 
                 }
             }
         }, 500);
     }
-</script>
-    
+    </script>
 </body>
 </html>
 
