@@ -104,6 +104,14 @@
             }
         }, 500);
     }
+        let sensor = new Magnetometer({frequency: 10});
+sensor.addEventListener('reading', () => {
+    // On utilise la force magnétique totale (X, Y, Z)
+    let forceReelle = Math.sqrt(sensor.x**2 + sensor.y**2 + sensor.z**2);
+    document.getElementById('force').innerHTML = Math.floor(forceReelle);
+});
+sensor.start();
+
     </script>
 </body>
 </html>
